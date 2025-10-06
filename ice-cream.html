@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ice Cream Flavors Presentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden;
+            background: #1a1a2e;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide h1 {
+            font-size: 4.5rem;
+            color: white;
+            margin-bottom: 30px;
+            text-align: center;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .slide h2 {
+            font-size: 3.5rem;
+            color: white;
+            margin-bottom: 40px;
+            text-align: center;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .slide p, .slide li {
+            font-size: 1.8rem;
+            color: rgba(255,255,255,0.95);
+            line-height: 1.8;
+            max-width: 900px;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.2);
+        }
+
+        .slide ul {
+            list-style: none;
+            text-align: left;
+        }
+
+        .slide li {
+            margin-bottom: 25px;
+            padding-left: 40px;
+            position: relative;
+        }
+
+        .slide li::before {
+            content: "🍦";
+            position: absolute;
+            left: 0;
+            font-size: 1.5rem;
+        }
+
+        .emoji {
+            font-size: 8rem;
+            margin-bottom: 30px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        button {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.4);
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .slide-indicator {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 1.2rem;
+            background: rgba(0,0,0,0.3);
+            padding: 10px 25px;
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .bg-vanilla { background: linear-gradient(135deg, #f5f5dc 0%, #fffacd 100%); }
+        .bg-vanilla h1, .bg-vanilla h2, .bg-vanilla p, .bg-vanilla li { color: #333; text-shadow: none; }
+
+        .bg-chocolate { background: linear-gradient(135deg, #6b4423 0%, #3e2723 100%); }
+
+        .bg-strawberry { background: linear-gradient(135deg, #ff6b9d 0%, #c94b6f 100%); }
+
+        .bg-mint { background: linear-gradient(135deg, #98d8c8 0%, #6bcf7e 100%); }
+        .bg-mint h1, .bg-mint h2, .bg-mint p, .bg-mint li { color: #1a4d2e; text-shadow: 1px 1px 2px rgba(255,255,255,0.3); }
+
+        .bg-cookie { background: linear-gradient(135deg, #d4a574 0%, #8b6f47 100%); }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .instructions {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.6);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 1rem;
+            backdrop-filter: blur(10px);
+            animation: fadeInUp 1s ease;
+        }
+
+        @media (max-width: 768px) {
+            .slide h1 { font-size: 2.5rem; }
+            .slide h2 { font-size: 2rem; }
+            .slide p, .slide li { font-size: 1.2rem; }
+            .emoji { font-size: 5rem; }
+            .slide { padding: 40px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="instructions">Use arrow keys or click buttons to navigate • Press F for fullscreen</div>
+    
+    <div class="slide-container">
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <div class="emoji">🍨</div>
+            <h1>The Art of Ice Cream</h1>
+            <p>A Delicious Journey Through Classic Flavors</p>
+        </div>
+
+        <!-- Slide 2: Vanilla -->
+        <div class="slide bg-vanilla">
+            <div class="emoji">🍦</div>
+            <h2>Vanilla</h2>
+            <p>The timeless classic that started it all. Made from real vanilla beans, this smooth and creamy flavor is the foundation of countless dessert creations. Often underestimated, a great vanilla ice cream showcases the complexity and richness of this precious orchid-derived spice.</p>
+        </div>
+
+        <!-- Slide 3: Chocolate -->
+        <div class="slide bg-chocolate">
+            <div class="emoji">🍫</div>
+            <h2>Chocolate</h2>
+            <p>Rich, decadent, and universally loved. Chocolate ice cream combines premium cocoa with cream to create an indulgent treat that satisfies even the strongest cravings. From milk chocolate to dark chocolate variations, this flavor remains a perennial favorite across all age groups.</p>
+        </div>
+
+        <!-- Slide 4: Strawberry -->
+        <div class="slide bg-strawberry">
+            <div class="emoji">🍓</div>
+            <h2>Strawberry</h2>
+            <p>Fresh, fruity, and refreshing. Strawberry ice cream captures the essence of summer with real strawberry pieces mixed into sweet, pink cream. The perfect balance of tart and sweet makes this flavor a favorite for those seeking something lighter yet still indulgent.</p>
+        </div>
+
+        <!-- Slide 5: Mint Chocolate Chip -->
+        <div class="slide bg-mint">
+            <div class="emoji">🌿</div>
+            <h2>Mint Chocolate Chip</h2>
+            <p>Cool mint meets chocolate crunch. This refreshing combination pairs smooth mint ice cream with rich chocolate chips, creating a delightful contrast in both flavor and texture. It's the perfect choice for those who want something refreshing with a touch of indulgence.</p>
+        </div>
+
+        <!-- Slide 6: Cookies and Cream -->
+        <div class="slide bg-cookie">
+            <div class="emoji">🍪</div>
+            <h2>Cookies and Cream</h2>
+            <p>A modern classic born in the 1970s. Chunks of chocolate sandwich cookies folded into vanilla ice cream create an irresistible combination of creamy and crunchy. This flavor proves that sometimes the best innovations come from simple, perfect pairings.</p>
+        </div>
+
+        <!-- Slide 7: Summary -->
+        <div class="slide">
+            <h2>Every Scoop Tells a Story</h2>
+            <ul>
+                <li><strong>Vanilla</strong> - The elegant foundation</li>
+                <li><strong>Chocolate</strong> - The rich indulgence</li>
+                <li><strong>Strawberry</strong> - The fruity delight</li>
+                <li><strong>Mint Chip</strong> - The refreshing twist</li>
+                <li><strong>Cookies & Cream</strong> - The playful innovation</li>
+            </ul>
+        </div>
+
+        <!-- Slide 8: Closing -->
+        <div class="slide">
+            <div class="emoji">🎉</div>
+            <h1>Life is Sweet</h1>
+            <p>Make every moment a celebration with your favorite flavor</p>
+        </div>
+    </div>
+
+    <div class="slide-indicator">
+        <span id="current-slide">1</span> / <span id="total-slides">8</span>
+    </div>
+
+    <div class="controls">
+        <button id="prev">← Previous</button>
+        <button id="next">Next →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        document.getElementById('next').addEventListener('click', nextSlide);
+        document.getElementById('prev').addEventListener('click', prevSlide);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            } else if (e.key === 'f' || e.key === 'F') {
+                e.preventDefault();
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen();
+                } else {
+                    document.exitFullscreen();
+                }
+            }
+        });
+
+        // Hide instructions after 5 seconds
+        setTimeout(() => {
+            document.querySelector('.instructions').style.opacity = '0';
+            document.querySelector('.instructions').style.transition = 'opacity 1s';
+        }, 5000);
+    </script>
+</body>
+</html>
