@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three-Bucket L&D Framework</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        .buckets-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        @media (max-width: 1024px) {
+            .buckets-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .bucket {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .bucket:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        
+        .bucket-header {
+            padding: 25px;
+            color: white;
+            text-align: center;
+        }
+        
+        .prescriptive-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .reactive-header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .proactive-header {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+        
+        .bucket-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .bucket-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .bucket-subtitle {
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+        
+        .bucket-content {
+            padding: 25px;
+        }
+        
+        .bucket-section {
+            margin-bottom: 25px;
+        }
+        
+        .bucket-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .section-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-icon {
+            font-size: 1.2em;
+        }
+        
+        .section-content {
+            color: #555;
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+        
+        .example-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+        
+        .example-list li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            font-size: 0.9em;
+        }
+        
+        .example-list li:before {
+            content: "•";
+            position: absolute;
+            left: 8px;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .prescriptive-bullet li:before { color: #667eea; }
+        .reactive-bullet li:before { color: #f5576c; }
+        .proactive-bullet li:before { color: #43e97b; }
+        
+        .ownership-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .prescriptive-badge {
+            background: #e3e8ff;
+            color: #667eea;
+        }
+        
+        .reactive-badge {
+            background: #ffe3f0;
+            color: #f5576c;
+        }
+        
+        .proactive-badge {
+            background: #d4f7e6;
+            color: #43e97b;
+        }
+        
+        .decision-tree {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 40px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .decision-tree h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .decision-question {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .decision-question strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        .decision-arrow {
+            text-align: center;
+            font-size: 1.5em;
+            color: #667eea;
+            margin: 10px 0;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 40px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-table th {
+            background: #667eea;
+            color: white;
+            padding: 20px;
+            text-align: left;
+            font-size: 1.1em;
+        }
+        
+        .comparison-table td {
+            padding: 18px 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .comparison-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .row-label {
+            font-weight: bold;
+            color: #667eea;
+            width: 180px;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 30px;
+            border-left: 5px solid #f39c12;
+        }
+        
+        .highlight-box h3 {
+            color: #d35400;
+            margin-bottom: 15px;
+        }
+        
+        .highlight-box p {
+            color: #333;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>The Three-Bucket L&D Framework</h1>
+        <p class="subtitle">Organizing Learning by Responsibility & Timing</p>
+        
+        <div class="buckets-grid">
+            <!-- PRESCRIPTIVE BUCKET -->
+            <div class="bucket">
+                <div class="bucket-header prescriptive-header">
+                    <div class="bucket-icon">🎯</div>
+                    <div class="bucket-title">Prescriptive</div>
+                    <div class="bucket-subtitle">What We Require</div>
+                </div>
+                <div class="bucket-content">
+                    <div class="bucket-section">
+                        <div class="section-title">
+                            <span class="section-icon">📋</span>
+                            Definition
+                        </div>
+                        <div class="section-content">
+                            Essential knowledge that learners cannot easily teach themselves or may not know they need. Company mandates completion.
+                        </div>
+                    </div>
+                    
+                    <div class="bucket-section">
+                        <div class="section-title">
+                            <span class="section-icon">👥</span>
+                            Ownership
+                        </div>
+                        <div class="section-content">
+                            <span class="ownership-badge prescriptive-badge">Company designs & delivers</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bucket-section">
+                        <div class="section-title">
+                            <span class="section-icon">📚</span>
+                            Examples from Thoughtful AI
+                        </div>
+                        <ul class="example-list prescriptive-bullet">
+                            <li>RCM fundamentals & industry context</li>
+                            <li>Company mission & values (Warrior Culture)</li>
+                            <li>Organizational structure & teams</li>
+                            <li>HIPAA & security compliance</li>
+                            <li>Communication norms (Slack, Notion, JIRA)</li>
+                            <li>Self-efficacy cascade (Levels 1-4)</li>
+                            <li>Tool setup & navigation basics</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bucket-section">
+                        <div class="section-title">
+                            <span class="section-icon">🎓</span>
+                            Delivery Methods
+                        </div>
+                        <div class="section-content">
+                            Live cohort sessions, required e-learning modules, structured programs, manager 1-on-1s
+                        </div>
+                    </div>
+                    
+                    <div class="bucket-section">
+                        <div class="section-title">
+                            <span class="section-icon">⏰</span>
+                            Timing
+                        </div>
+                        <div class="section-content">
+                            Days 1-2 + Week 1 (before any customer work)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- REACTIVE BUCKET -->
+            <div class="bucket">
+                <div class="bucket-header reactive-header">
+                    <div class="bucket-icon">🔍</div>
+                    <div class="bucket-title">Reactive</div>
+                    <div class="bucket-subtitle">What's Available When Needed</div>
+                </div>
+                <div class="bucket-content">
+                    <div class="bucket-section">
+                        <div class="section-title">
+                            <span class="section-icon">📋</span>
+                            Definition
+                        </div>
+                        <div class="section-content">
+                            Conditional information that isn't universally relevant but must be accessible when situations arise. We teach WHERE to find it.
+                        </div>
+                    </div>
+                    
+                    <div class="bucket-section">
+                        <div class="section-title">
+                            <span class="section-icon">👥</span>
+                            Ownership
+                        </div>
+                        <div class="section-content">
+                            <span class="ownership-badge reactive-badge">Company creates resources; learner retrieves as needed</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bucket-section">
+                        <div class="section-title">
+                            <span class="section-icon">📚</span>
+                            Examples from Thoughtful AI
+                        </div>
+                        <ul class="example-list reactive-bullet">
+                            <li>Agent-specific PRDs (EVA, CAM, PHIL, PAULA)</li>
+                            <li>Customer-specific workflows & portals</li>
+                            <li>Troubleshooting guides & FAQs</li>
+                            <li>Tool documentation (Robocorp, Empower)</li>
+                            <li>Acronym glossary (Acromania)</li>
+                            <li>Process deep dive recordings</li>
+                            <li>Role-specific procedures</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bucket-section">
+                        <div class="section-title">
+                            <span class="section-icon">🎓</span>
+                            Delivery Methods
+                        </div>
+                        <div class="section-content">
+                            Searchable knowledge base (Notion), documentation, how-to videos, reference materials, Slack channels
+                        </div>
+                    </div>
+                    
+                    <div class="bucket-section">
+                        <div class="section-title">
+                            <span class="section-icon">⏰</span>
+                            Timing
+                        </div>
+                        <div class="section-content">
+                            Just-in-time, when situation arises during work
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PROACTIVE BUCKET -->
+            <div class="bucket">
+                <div class="bucket-header proactive-header">
+                    <div class="bucket-icon">🚀</div>
+                    <div class="bucket-title">Proactive</div>
+                    <div class="bucket-subtitle">What Individuals Own</div>
+                </div>
+                <div class="bucket-content">
+                    <div class="bucket-section">
+                        <div class="section-title">
+                            <span class="section-icon">📋</span>
+                            Definition
+                        </div>
+                        <div class="section-content">
+                            Specialized skills that are self-directed by the individual based on role evolution and career goals. Company provides framework and accountability.
+                        </div>
+                    </div>
+                    
+                    <div class="bucket-section">
+                        <div class="section-title">
+                            <span class="section-icon">👥</span>
+                            Ownership
+                        </div>
+                        <div class="section-content">
+                            <span class="ownership-badge proactive-badge">Learner identifies, scopes, and completes; manager approves & tracks</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bucket-section">
+                        <div class="section-title">
+                            <span class="section-icon">📚</span>
+                            Examples from Thoughtful AI
+                        </div>
+                        <ul class="example-list proactive-bullet">
+                            <li>30/60/90 day role-specific goals</li>
+                            <li>Healthcare sub-industry expertise (e.g., specialty clinics)</li>
+                            <li>Advanced automation certifications</li>
+                            <li>Leadership & communication skills</li>
+                            <li>Cross-functional knowledge expansion</li>
+                            <li>Creating new documentation for gaps</li>
+                            <li>Process optimization initiatives</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bucket-section">
+                        <div class="section-title">
+                            <span class="section-icon">🎓</span>
+                            Delivery Methods
+                        </div>
+                        <div class="section-content">
+                            Self-selected courses, certifications, mentorship, stretch projects, content creation, share-backs
+                        </div>
+                    </div>
+                    
+                    <div class="bucket-section">
+                        <div class="section-title">
+                            <span class="section-icon">⏰</span>
+                            Timing
+                        </div>
+                        <div class="section-content">
+                            Week 2-3 planning; ongoing throughout employment
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="highlight-box">
+            <h3>🔑 The Key Enabler: Self-Efficacy as Prescriptive Training</h3>
+            <p><strong>Before any of this works, employees need the self-efficacy cascade (Levels 1-4) taught prescriptively:</strong> Industry context → Company mission → Org structure → Team responsibilities. This foundation allows employees to identify their own gaps and articulate learning needs. Then managers apply this framework to categorize those needs appropriately. Without this prescriptive foundation, employees can't effectively engage with reactive resources or drive proactive learning.</p>
+        </div>
+        
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>Characteristic</th>
+                    <th>🎯 Prescriptive</th>
+                    <th>🔍 Reactive</th>
+                    <th>🚀 Proactive</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="row-label">Who decides content?</td>
+                    <td>Company/Manager</td>
+                    <td>Company creates, learner selects when</td>
+                    <td>Learner proposes, manager approves</td>
+                </tr>
+                <tr>
+                    <td class="row-label">Mandatory?</td>
+                    <td>✅ Yes</td>
+                    <td>⚠️ Available when needed</td>
+                    <td>✅ Yes (but learner-scoped)</td>
+                </tr>
+                <tr>
+                    <td class="row-label">Timeline</td>
+                    <td>Pre-defined (Days 1-2, Week 1)</td>
+                    <td>As-needed during work</td>
+                    <td>Planned checkpoints (Weeks 2-3, 30/60/90)</td>
+                </tr>
+                <tr>
+                    <td class="row-label">Content maintenance</td>
+                    <td>L&D updates regularly</td>
+                    <td>Subject matter experts update</td>
+                    <td>Learner may create new content</td>
+                </tr>
+                <tr>
+                    <td class="row-label">Scalability</td>
+                    <td>Fixed cost per cohort</td>
+                    <td>Scales infinitely once created</td>
+                    <td>Scales infinitely (learner-driven)</td>
+                </tr>
+                <tr>
+                    <td class="row-label">Risk if skipped</td>
+                    <td>🔴 High - can't do basic job functions</td>
+                    <td>🟡 Medium - inefficiency, frustration</td>
+                    <td>🟡 Medium - missed growth opportunities</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="decision-tree">
+            <h2>🔍 Decision Tree: Which Bucket Does This Belong In?</h2>
+            
+            <div class="decision-question">
+                <strong>Question 1: Is this essential for everyone from Day 1, AND would they struggle to learn it independently?</strong>
+                → YES = <span style="color: #667eea; font-weight: bold;">PRESCRIPTIVE</span> - Design formal training
+            </div>
+            
+            <div class="decision-arrow">↓ NO</div>
+            
+            <div class="decision-question">
+                <strong>Question 2: Will people need this information conditionally, AND can they learn it when the moment arises?</strong>
+                → YES = <span style="color: #f5576c; font-weight: bold;">REACTIVE</span> - Create searchable documentation
+            </div>
+            
+            <div class="decision-arrow">↓ NO</div>
+            
+            <div class="decision-question">
+                <strong>Question 3: Is this specialized knowledge that varies by individual, OR is it best owned by the learner?</strong>
+                → YES = <span style="color: #43e97b; font-weight: bold;">PROACTIVE</span> - Provide framework and accountability
+            </div>
+            
+            <div style="margin-top: 25px; padding: 20px; background: white; border-radius: 10px;">
+                <strong style="color: #667eea;">Special Considerations:</strong>
+                <ul style="margin-top: 10px; line-height: 1.8;">
+                    <li><strong>Compliance/safety topics</strong> → Always prescriptive</li>
+                    <li><strong>Process changes</strong> → Often reactive (unless mission-critical)</li>
+                    <li><strong>Emerging skills</strong> → Usually proactive (unless competitive differentiator)</li>
+                    <li><strong>Rapidly evolving content</strong> → Favor reactive or proactive to avoid constant rework</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
